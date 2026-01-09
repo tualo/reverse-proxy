@@ -12,7 +12,7 @@ class PublicProxy extends \Tualo\Office\Basic\RouteWrapper
     {
         try {
             $session = App::get('session');
-            if ($session->isLoggedIn()) {
+            if (!is_null($session) && $session->isLoggedIn()) {
                 $db = App::get('session')->getDB();
                 $routes = $db->direct('select * from reverse_proxy_public_routes where active=1');
                 foreach ($routes as $route) {
