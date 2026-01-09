@@ -99,12 +99,19 @@ class ReverseProxy
             }
         }
 
-
         if (!empty($this->cookies)) {
             foreach ($this->cookies as $value) {
-                $forwardHeaders[] =  $value;
+                if (preg_match('/^Set-Cookie:\s*([^;]*)/mi', $value, $match)) {
+                    $cookieParts = explode(':', $value, 2);
+                    if (count($cookieParts) == 2) {
+                        $cookieValue = trim($cookieParts[1]);
+                        curl_setopt($ch, CURLOPT_COOKIE, $cookieValue);
+                    }
+                }
+                $forwardHeaders[] =  'Cookie: ' .   $cookieValue;
             }
         }
+
 
 
         // 4) cURL Setup
@@ -117,6 +124,8 @@ class ReverseProxy
             CURLOPT_HTTPHEADER     => $forwardHeaders,
             CURLOPT_TIMEOUT        => 30,
         ]);
+
+
 
 
         // Methoden mit Body (POST/PUT/PATCH/DELETE etc.)
