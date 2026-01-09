@@ -1,0 +1,26 @@
+{
+  "name": "tualo/reverse-proxy",
+  "description": "tualo - reverse-proxy",
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Thomas Hoffmann",
+      "email": "thomas.hoffmann@tualo.de"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Tualo\\Office\\ReverseProxy\\": "src/"
+    },
+    "files": [
+      "src/functions.php"
+    ]
+  },
+  "minimum-stability": "dev",
+  "require": {
+    "tualo/ds": "^1.5",
+    "tualo/server": "^1"
+  },
+  "version": "1.0.1"
+}
