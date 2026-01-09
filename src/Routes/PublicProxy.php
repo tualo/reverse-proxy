@@ -18,6 +18,9 @@ class PublicProxy extends \Tualo\Office\Basic\RouteWrapper
                 foreach ($routes as $route) {
                     $methods = ['get', 'post', 'put', 'patch', 'delete', 'options', 'head'];
                     $path = $route['route_path'];
+                    $route['allowed_methods'] = trim(str_replace(',,', ',', str_replace("\n", ',', str_replace(' ', '', strtolower($route['allowed_methods'])))));
+                    $route['allowed_forward_headers'] = trim(str_replace(',,', ',', str_replace("\n", ',', str_replace(' ', '', strtolower($route['allowed_forward_headers'])))));
+                    $route['filter_response_headers'] = trim(str_replace(',,', ',', str_replace("\n", ',', str_replace(' ', '', strtolower($route['filter_response_headers'])))));
                     if (trim($route['allowed_methods']) != '') {
                         $methods = explode(',', $route['allowed_methods']);
                     }
