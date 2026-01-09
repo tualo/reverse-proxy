@@ -4,6 +4,7 @@ namespace Tualo\Office\ReverseProxy\Routes;
 
 use Tualo\Office\Basic\TualoApplication as App;
 use Tualo\Office\Basic\Route as BasicRoute;
+use Tualo\Office\DS\DataRenderer;
 use Tualo\Office\ReverseProxy\ReverseProxy;
 
 class PublicProxy extends \Tualo\Office\Basic\SessionRouteWrapper
@@ -33,6 +34,8 @@ class PublicProxy extends \Tualo\Office\Basic\SessionRouteWrapper
                                     $cookies = $_SESSION['reverse_proxy_public_routes']['cookies'];
                                 }
                             }
+
+                            $route['target_url'] = DataRenderer::renderTemplate($route['target_url'], $matches);
                             $proxy = new ReverseProxy($route['target_url']);
 
                             $proxy->setAllowedMethods($methods);

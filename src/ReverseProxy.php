@@ -101,14 +101,19 @@ class ReverseProxy
 
         if (!empty($this->cookies)) {
             foreach ($this->cookies as $value) {
+                $cookieValue = '';
                 if (preg_match('/^Set-Cookie:\s*([^;]*)/mi', $value, $match)) {
                     $cookieParts = explode(':', $value, 2);
                     if (count($cookieParts) == 2) {
-                        $cookieValue = trim($cookieParts[1]);
-                        curl_setopt($ch, CURLOPT_COOKIE, $cookieValue);
+                        $cookieValueParts = explode(';', trim($cookieParts[1]), 2);
+                        $cookieValueParts2 = explode('=', trim($cookieValueParts[0]), 2);
+                        if ($cookieValueParts2[1] == '') continue;
+                        $cookieValue = trim($cookieValueParts[0]);
                     }
                 }
-                $forwardHeaders[] =  'Cookie: ' .   $cookieValue;
+                if ($cookieValue != '') {
+                    $forwardHeaders[] =  'Cookie: ' .   $cookieValue;
+                }
             }
         }
 
