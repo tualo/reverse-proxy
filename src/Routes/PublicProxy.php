@@ -6,7 +6,7 @@ use Tualo\Office\Basic\TualoApplication as App;
 use Tualo\Office\Basic\Route as BasicRoute;
 use Tualo\Office\ReverseProxy\ReverseProxy;
 
-class PublicProxy extends \Tualo\Office\Basic\RouteWrapper
+class PublicProxy extends \Tualo\Office\Basic\SessionRouteWrapper
 {
     public static function register()
     {
