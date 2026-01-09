@@ -2,6 +2,7 @@
 
 namespace Tualo\Office\ReverseProxy;
 
+use Tualo\Office\Basic\TualoApplication as App;
 
 class ReverseProxy
 {
@@ -47,6 +48,15 @@ class ReverseProxy
         $this->filterResponseHeaders = $headers;
     }
 
+    public function toLower(array $input): array
+    {
+        $result = [];
+        foreach ($input as $key => $value) {
+            $result[$key] = strtolower($value);
+        }
+        return $result;
+    }
+
     public function handleRequest()
     {
 
@@ -58,7 +68,9 @@ class ReverseProxy
 
         // 2) Request-Method & Body übernehmen
         $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
-        if (!in_array($method, $this->allowedMethods, true)) {
+        $this->allowedMethods = $this->toLower($this->allowedMethods);
+        if (!in_array(strtolower($method), $this->allowedMethods, true)) {
+            App::logger("ReverseProxy")->debug("Method not allowed: " . $method . " FILE " . __FILE__ . " LINE " . __LINE__);
             http_response_code(405);
             header('Content-Type: text/plain; charset=utf-8');
             echo "Methode nicht erlaubt.";
@@ -109,6 +121,7 @@ class ReverseProxy
         // 5) Ausführen
         $response = curl_exec($ch);
         if ($response === false) {
+            App::logger("ReverseProxy")->debug("Proxy-Fehler: " . $method . " FILE " . __FILE__ . " LINE " . __LINE__);
             http_response_code(502);
             header('Content-Type: text/plain; charset=utf-8');
             echo "Proxy-Fehler: " . curl_error($ch);
