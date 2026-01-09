@@ -77,7 +77,13 @@ class ReverseProxy
             exit;
         }
 
-        $rawBody = file_get_contents('php://input');
+        // Body handling: für application/x-www-form-urlencoded sind Daten in $_POST
+        $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
+        if (stripos($contentType, 'application/x-www-form-urlencoded') !== false && !empty($_POST)) {
+            $rawBody = http_build_query($_POST);
+        } else {
+            $rawBody = file_get_contents('php://input');
+        }
 
         // 3) (Optional) Eingehende Header (Request) teilweise übernehmen
         //    WICHTIG: Nicht blind ALLE Header forwarden, sonst gibts oft Ärger mit Host/Content-Length/etc.
