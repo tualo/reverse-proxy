@@ -85,17 +85,27 @@ class ReverseProxy
         $forwardHeaders = [];
 
         // Beispiel: Nur sinnvolle Header weitergeben:
-        $allowList = $this->allowedForwardHeaders;
+        $allowList = $this->toLower($this->allowedForwardHeaders);
 
         foreach ($incomingHeaders as $name => $value) {
             // normalize
             $normName = preg_replace('/\s+/', '-', trim($name));
-            if (in_array($normName, $allowList, true)) {
+            if (in_array(strtolower($normName), $allowList, true)) {
                 // Content-Length lieber nicht setzen, macht cURL selbst passend
                 if (strcasecmp($normName, 'Content-Length') === 0) continue;
                 $forwardHeaders[] = $normName . ': ' . $value;
+            } else {
+                App::logger("ReverseProxy")->debug("Filtered-Header: " . $normName);
             }
         }
+
+
+        if (!empty($this->cookies)) {
+            foreach ($this->cookies as $value) {
+                $forwardHeaders[] =  $value;
+            }
+        }
+
 
         // 4) cURL Setup
         $ch = curl_init($targetUrl);
@@ -108,9 +118,6 @@ class ReverseProxy
             CURLOPT_TIMEOUT        => 30,
         ]);
 
-        if (!empty($this->cookies)) {
-            curl_setopt($ch, CURLOPT_COOKIE, implode('; ', $this->cookies));
-        }
 
         // Methoden mit Body (POST/PUT/PATCH/DELETE etc.)
         $methodsWithBody = ['POST', 'PUT', 'PATCH', 'DELETE'];
